@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-15">
+        <title></title>
+        <link rel="stylesheet" href="shop.css">
+    </head>
+    <body>
+        <h1>Shop</h1>
+
+        <p id = "ostud"></p>
+        <button onclick="Buy('potion')">Potion</button>
+
+        <a href="web.html">Game</a>
+
+    <script>
+        function Buy(Item)
+        {
+            let ost = JSON.parse(localStorage.getItem("Bought")) || {};
+            
+            if (ost[Item]) 
+            {
+                ost[Item]++
+            }
+            else
+            {
+                ost[Item] = 1;
+            }
+            localStorage.setItem("Bought", JSON.stringify(ost));
+        }
+    </script>
+
+    
+
+    </body>
+</html>
