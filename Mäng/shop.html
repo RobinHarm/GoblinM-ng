@@ -15,8 +15,10 @@
         <p id = "gold"></p>
         <p id = "name"></p>
         <p id = "health"></p>
-        <a href="web.html">Back To Game</a>
-        
+        <p id="msg"></p>
+        <a href="web.html">
+            <button>Back</button>
+        </a>
 
     <script>
 let playerName = localStorage.getItem("name") || "unknown";
@@ -43,6 +45,13 @@ function Buy() {
         alert("Not enough gold!");
     }
 }
+updateUI();
+
+function SURM()
+{
+
+}
+
 
 updateUI();
     </script>

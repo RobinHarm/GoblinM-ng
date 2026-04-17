@@ -14,18 +14,22 @@
 
 <p id = "name"></p>
 <p id = "health"></p>
+<p id = "mana"></p>
 <p id = "gold"></p>
 <p id = "potion"></p>
 <p id = "damage"></p>
 
 <p id = "picture"></p>
 <p id = "enemy_health"></p>
-<a href="shop.html">shop</a>
 
 
-<button onclick="attack()">attack</button>
-<button onclick="healing()">heal</button>
+<button onclick="attack()">attack</button><br>
+<p id = "ability"></p>
+<button onclick="ability()">ability</button><br>
+<button onclick="healing()">heal</button><br>
 <button onclick="next()">next</button>
+
+<div id="shopLink"></div>
 
 
 <div id="list"></div>
@@ -34,9 +38,13 @@
 let max_health;
 let start_health;
 let health;
+let max_mana;
+let start_mana;
+let mana;
 let start_gold;
 let gold;
 let damage;
+let playerAbility;
 let heal = 1;
 let enemy_health = 3;
 let start_potion;
@@ -66,24 +74,33 @@ const playerClass = localStorage.getItem("class");
 
 if (playerClass == "warrior") 
 {
+    playerAbility = "rage";
     start_health = 20;
     max_health = 40;
+    max_mana = 20;
+    start_mana = 20;
     start_gold = 20;
     start_potion = 1;
     damage = 2;
 }
 else if (playerClass == "wizard") 
 {
+    playerAbility = "life absorb";
     start_health = 10;
     max_health = 20;
+    max_mana = 40;
+    start_mana = 40;
     start_gold = 20;
     start_potion = 3;
     damage = 4;
 }
 else if (playerClass == "thief") 
 {
+    playerAbility = "steal";
     start_health = 20;
     max_health = 30;
+    max_mana = 20;
+    start_mana = 20;
     start_gold = 40;
     start_potion = 2;
     damage = 3;
@@ -94,17 +111,21 @@ if (isNewGame) {
     health = start_health;
     gold = start_gold;
     potion = start_potion;
+    mana = start_mana
     localStorage.setItem("health", health);
     localStorage.setItem("gold", gold);
     localStorage.setItem("potion", potion);
+    localStorage.setItem("mana", mana);
 } else {
     let savedHealth = localStorage.getItem("health");
     let savedGold = localStorage.getItem("gold");
     let savedPotion = localStorage.getItem("potion");
+    let savedMana = localStorage.getItem("mana");
 
     if (savedHealth !== null) health = parseInt(savedHealth);
     if (savedGold !== null) gold = parseInt(savedGold);
     if (savedPotion !== null) potion = parseInt(savedPotion);
+    if (savedMana !== null) mana = parseInt(savedMana);
 }
 
 //------------------------------------------------------------------------
@@ -113,12 +134,24 @@ document.getElementById("picture").innerHTML = '<img src="Piltid/goblin.png" alt
 
 function updateUI() {
     document.getElementById("name").innerText = "name: " + playerName + " the " + playerClass;
-    document.getElementById("health").innerText = "health: " + health;
+    document.getElementById("health").innerText = "health: " + health + "/" + max_health;
+    document.getElementById("mana").innerText = "mana: " + mana + "/" + max_mana;
     document.getElementById("gold").innerText = "gold: " + gold;
     document.getElementById("potion").innerText = "potions: " + potion;
     document.getElementById("damage").innerText = "damage: " + damage;
     document.getElementById("enemy_health").innerText = "enemy health: " + enemy_health;
+    document.getElementById("ability").innerText = "ability: " + playerAbility;
     
+}
+
+function LinkShop()
+{
+    if (dead == 1)
+    {
+        document.getElementById("shopLink").innerHTML =
+            '<a href="shop.html">Mine poodi</a>';
+    }
+
 }
 
 
@@ -162,11 +195,22 @@ function attack()
                 break;
                 
         }
+        if (mana < max_mana)
+        {
+            mana += 2;
+            if (mana > max_mana)
+            {
+                mana = max_mana;
+            }
+        }
         saveGame();
+
+        LinkShop();
     }
     
     updateUI(); 
 }
+
 
 function healing()
 {
@@ -189,22 +233,26 @@ function next()
 {
     if (dead == 1)
     {
+        document.getElementById("shopLink").innerHTML = "";
+
         rand = Math.floor(Math.random() * 3) + 1;
-        switch(rand)
+
+        if (rand == 1)
         {
-            case 1:
-                document.getElementById("picture").innerHTML = '<img src="Piltid/munnikoletis.png" alt="cock" width = "256" height = "auto"/>';
-                enemy_health = Math.floor(Math.random() * 5) + 1;
-                break;
-            case 2:
-                document.getElementById("picture").innerHTML = '<img src="Piltid/slime.png" alt="slime" width = "256" height = "auto"/>';
-                enemy_health = Math.floor(Math.random() * 3) + 1;
-                break;
-            default:
-                document.getElementById("picture").innerHTML = '<img src="Piltid/goblin.png" alt="goblin" width = "256" height = "auto"/>';              
-                enemy_health = Math.floor(Math.random() * 9) + 1;
-                break;   
+            document.getElementById("picture").innerHTML = '<img src="Piltid/munnikoletis.png" width="256"/>';
+            enemy_health = Math.floor(Math.random() * 5) + 1;
         }
+        else if (rand == 2)
+        {
+            document.getElementById("picture").innerHTML = '<img src="Piltid/slime.png" width="256"/>';
+            enemy_health = Math.floor(Math.random() * 3) + 1;
+        }
+        else
+        {
+            document.getElementById("picture").innerHTML = '<img src="Piltid/goblin.png" width="256"/>';              
+            enemy_health = Math.floor(Math.random() * 9) + 1;
+        }
+
         dead = 0;
         updateUI();
     }
@@ -252,15 +300,37 @@ function pood()
 
     localStorage.removeItem("Bought");
 }
-pood()
-updateUI()
 
-function saveGame() {
+
+function saveGame() 
+{
     localStorage.setItem("health", health);
+    localStorage.setItem("mana", mana);
     localStorage.setItem("gold", gold);
     localStorage.setItem("potion", potion);
 }
 
+function ability() 
+{
+    if (playerClass == "warrior") 
+    {
+        enemy_health -= 2 * damage
+    }
+    else if (playerClass == "wizard") 
+    {
+        if (health < max_health)
+        {
+            health += Math.ceil(enemy_health / 2)
+            enemy_health -= Math.ceil(enemy_health / 2)
+        }
+    }
+    else if (playerClass == "thief") 
+    {
+
+    }
+}
+pood()
+updateUI()
 </script>
 
 </body>
