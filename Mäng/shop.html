@@ -2,36 +2,49 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-15">
-        <title></title>
-        <link rel="stylesheet" href="shop.css">
+        <meta charset="UTF-8">
+        <title>shop</title>
+        <link rel="stylesheet" href="main.css">
     </head>
     <body>
         <h1>Shop</h1>
 
         <p id = "ostud"></p>
-        <button onclick="Buy('potion')">Potion</button>
-
-        <a href="web.html">Game</a>
+        <button onclick="Buy('potion')">Potion 10-Gold </button>
+        <p id = "potion"></p>
+        <p id = "gold"></p>
+        <p id = "name"></p>
+        <p id = "health"></p>
+        <a href="web.html">Back To Game</a>
+        
 
     <script>
-        function Buy(Item)
-        {
-            let ost = JSON.parse(localStorage.getItem("Bought")) || {};
-            
-            if (ost[Item]) 
-            {
-                ost[Item]++
-            }
-            else
-            {
-                ost[Item] = 1;
-            }
-            localStorage.setItem("Bought", JSON.stringify(ost));
-        }
+let playerName = localStorage.getItem("name") || "unknown";
+let playerClass = localStorage.getItem("class") || "unknown";
+let health = parseInt(localStorage.getItem("health")) || 0;
+let gold = parseInt(localStorage.getItem("gold")) || 0;
+let potion = parseInt(localStorage.getItem("potion")) || 0;
+
+function updateUI() {
+    document.getElementById("gold").innerText = "Gold: " + gold;
+    document.getElementById("potion").innerText = "Potions: " + potion;
+    document.getElementById("name").innerText = "Name: " + playerName + " the " + playerClass;
+    document.getElementById("health").innerText = "Health: " + health;
+}
+
+function Buy() {
+    if (gold >= 10) {
+        gold -= 10;
+        potion += 1;
+        localStorage.setItem("gold", gold);
+        localStorage.setItem("potion", potion);  // match game's key
+        updateUI();
+    } else {
+        alert("Not enough gold!");
+    }
+}
+
+updateUI();
     </script>
-
-    
-
-    </body>
+    </body> 
 </html>

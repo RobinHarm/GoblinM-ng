@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>game</title>
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
-    
+    <body>
     
 <h1>ROBINI MORVAKAMBER</h1>
 <p>tapa robin</p>
@@ -28,27 +29,90 @@
 
 
 <div id="list"></div>
-
+</body>
 <script>
-let name = "NIGGER";
-let max_health = 30;
-let health = 10;
-let gold = 30;
-let damage = 2;
+let max_health;
+let start_health;
+let health;
+let start_gold;
+let gold;
+let damage;
 let heal = 1;
 let enemy_health = 3;
-let potion = 1;
+let start_potion;
+let potion;
 let r;
 let a;
 
-let savedPotion = localStorage.getItem("potion");
-if (savedPotion !== null) {
-    potion = parseInt(savedPotion);
+
+
+//------------------------------------------------------------------------
+//character info
+const params = new URLSearchParams(window.location.search);
+
+const isNewGame = params.get("new") === "true";
+const name = params.get("cname");
+const classChoice = params.get("class_choice");
+
+if (name && classChoice) 
+{
+    localStorage.setItem("name", name);
+    localStorage.setItem("class", classChoice);
 }
-document.getElementById("picture").innerHTML = '<img src="goblin.png" alt="goblin" width = "256" height = "auto"/>';
+
+
+const playerName = localStorage.getItem("name");
+const playerClass = localStorage.getItem("class");
+
+if (playerClass == "warrior") 
+{
+    start_health = 20;
+    max_health = 40;
+    start_gold = 20;
+    start_potion = 1;
+    damage = 2;
+}
+else if (playerClass == "wizard") 
+{
+    start_health = 10;
+    max_health = 20;
+    start_gold = 20;
+    start_potion = 3;
+    damage = 4;
+}
+else if (playerClass == "thief") 
+{
+    start_health = 20;
+    max_health = 30;
+    start_gold = 40;
+    start_potion = 2;
+    damage = 3;
+}
+//------------------------------------------------------------------------
+//item info
+if (isNewGame) {
+    health = start_health;
+    gold = start_gold;
+    potion = start_potion;
+    localStorage.setItem("health", health);
+    localStorage.setItem("gold", gold);
+    localStorage.setItem("potion", potion);
+} else {
+    let savedHealth = localStorage.getItem("health");
+    let savedGold = localStorage.getItem("gold");
+    let savedPotion = localStorage.getItem("potion");
+
+    if (savedHealth !== null) health = parseInt(savedHealth);
+    if (savedGold !== null) gold = parseInt(savedGold);
+    if (savedPotion !== null) potion = parseInt(savedPotion);
+}
+
+//------------------------------------------------------------------------
+
+document.getElementById("picture").innerHTML = '<img src="Piltid/goblin.png" alt="goblin" width = "256" height = "auto"/>';
 
 function updateUI() {
-    document.getElementById("name").innerText = "name: " + name;
+    document.getElementById("name").innerText = "name: " + playerName + " the " + playerClass;
     document.getElementById("health").innerText = "health: " + health;
     document.getElementById("gold").innerText = "gold: " + gold;
     document.getElementById("potion").innerText = "potions: " + potion;
@@ -65,7 +129,7 @@ function attack()
     {
         enemy_health -= damage;
         r = Math.random() * 1;
-        if (r > 0.66) {enemy_attack()} 
+        if (r > 0.66) {enemy_attack(); saveGame();} 
     }
 
     if (enemy_health <= 0 && dead == 0) 
@@ -78,7 +142,7 @@ function attack()
                 r = Math.random() * 1;
                 if (r > 0.50) {potion_get()} 
                 dead = 1;
-                document.getElementById("picture").innerHTML = '<img src="surnud munnikoletis.png" alt="dead cock" width = "256" height = "auto"/>';
+                document.getElementById("picture").innerHTML = '<img src="Piltid/surnud munnikoletis.png" alt="dead cock" width = "256" height = "auto"/>';
                 break;
             case 2:
                 enemy_health = 0;
@@ -86,7 +150,7 @@ function attack()
                 r = Math.random() * 1;
                 if (r > 0.50) {potion_get()} 
                 dead = 1; 
-                document.getElementById("picture").innerHTML = '<img src="slime dead.png" alt="dead slime" width = "256" height = "auto"/>';
+                document.getElementById("picture").innerHTML = '<img src="Piltid/slime dead.png" alt="dead slime" width = "256" height = "auto"/>';
                 break;
             default:
                 enemy_health = 0;
@@ -94,13 +158,13 @@ function attack()
                 r = Math.random() * 1;
                 if (r > 0.50) {potion_get()} 
                 dead = 1;
-                document.getElementById("picture").innerHTML = '<img src="goblinDead.png" alt="dead goblin" width = "256" height = "auto"/>';
+                document.getElementById("picture").innerHTML = '<img src="Piltid/goblinDead.png" alt="dead goblin" width = "256" height = "auto"/>';
                 break;
                 
-                
         }
+        saveGame();
     }
-
+    
     updateUI(); 
 }
 
@@ -129,16 +193,16 @@ function next()
         switch(rand)
         {
             case 1:
-                document.getElementById("picture").innerHTML = '<img src="munnikoletis.png" alt="cock" width = "256" height = "auto"/>';
-                enemy_health += Math.floor(Math.random() * 5) + 1;
+                document.getElementById("picture").innerHTML = '<img src="Piltid/munnikoletis.png" alt="cock" width = "256" height = "auto"/>';
+                enemy_health = Math.floor(Math.random() * 5) + 1;
                 break;
             case 2:
-                document.getElementById("picture").innerHTML = '<img src="slime.png" alt="slime" width = "256" height = "auto"/>';
-                enemy_health += Math.floor(Math.random() * 3) + 1;
+                document.getElementById("picture").innerHTML = '<img src="Piltid/slime.png" alt="slime" width = "256" height = "auto"/>';
+                enemy_health = Math.floor(Math.random() * 3) + 1;
                 break;
             default:
-                document.getElementById("picture").innerHTML = '<img src="goblin.png" alt="goblin" width = "256" height = "auto"/>';              
-                enemy_health += Math.floor(Math.random() * 9) + 1;
+                document.getElementById("picture").innerHTML = '<img src="Piltid/goblin.png" alt="goblin" width = "256" height = "auto"/>';              
+                enemy_health = Math.floor(Math.random() * 9) + 1;
                 break;   
         }
         dead = 0;
@@ -159,8 +223,9 @@ function enemy_attack()
         default:
             health -= Math.floor(Math.random() * 3) + 1;
             break; 
-            updateUI();  
     }
+    saveGame(); 
+    updateUI(); 
 }
 
 function potion_get()
@@ -174,9 +239,15 @@ function pood()
 {
     const ost = JSON.parse(localStorage.getItem("Bought")) || {};
 
-    if (ost["potion"]) {
+    if (ost["potion"]) 
+    {
         potion += ost["potion"];
         saveGame(); 
+    }
+    if (ost["Health"]) 
+    {
+        health += ost["Health"];
+        saveGame();
     }
 
     localStorage.removeItem("Bought");
@@ -185,6 +256,8 @@ pood()
 updateUI()
 
 function saveGame() {
+    localStorage.setItem("health", health);
+    localStorage.setItem("gold", gold);
     localStorage.setItem("potion", potion);
 }
 
