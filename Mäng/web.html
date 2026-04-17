@@ -13,6 +13,8 @@
 
 
 <p id = "name"></p>
+<p id = "level"></p>
+<p id = "xp"></p>
 <p id = "health"></p>
 <p id = "mana"></p>
 <p id = "gold"></p>
@@ -35,20 +37,14 @@
 <div id="list"></div>
 </body>
 <script>
-let max_health;
-let start_health;
-let health;
-let max_mana;
-let start_mana;
-let mana;
-let start_gold;
-let gold;
+let xp;             let xpNextLevel;    let level;
+let max_health;     let start_health;   let health;
+let max_mana;       let start_mana;     let mana;
+let start_gold;     let gold;
 let damage;
 let playerAbility;
-let heal = 1;
 let enemy_health = 3;
-let start_potion;
-let potion;
+let start_potion;   let potion;
 let r;
 let a;
 
@@ -108,20 +104,32 @@ else if (playerClass == "thief")
 //------------------------------------------------------------------------
 //item info
 if (isNewGame) {
+    xp = 0;
+    xpNextLevel = 85;
+    level = 1;
     health = start_health;
     gold = start_gold;
     potion = start_potion;
     mana = start_mana
+    localStorage.setItem("xp", xp);
+    localStorage.setItem("xpNextLevel", xpNextLevel);
+    localStorage.setItem("level", level);
     localStorage.setItem("health", health);
     localStorage.setItem("gold", gold);
     localStorage.setItem("potion", potion);
     localStorage.setItem("mana", mana);
 } else {
+    let savedXp = localStorage.getItem("xp");
+    let savedXpNextLevel = localStorage.getItem("xpNextLevel");
+    let savedLevel = localStorage.getItem("level");
     let savedHealth = localStorage.getItem("health");
     let savedGold = localStorage.getItem("gold");
     let savedPotion = localStorage.getItem("potion");
     let savedMana = localStorage.getItem("mana");
 
+    if (savedXp !== null) xp = parseInt(savedXp);
+    if (savedXpNextLevel !== null) xpNextLevel = parseInt(savedXpNextLevel);
+    if (savedLevel !== null) level = parseInt(savedLevel);
     if (savedHealth !== null) health = parseInt(savedHealth);
     if (savedGold !== null) gold = parseInt(savedGold);
     if (savedPotion !== null) potion = parseInt(savedPotion);
@@ -134,6 +142,8 @@ document.getElementById("picture").innerHTML = '<img src="Piltid/goblin.png" alt
 
 function updateUI() {
     document.getElementById("name").innerText = "name: " + playerName + " the " + playerClass;
+    document.getElementById("xp").innerText = "xp: " + xp + "/" + xpNextLevel;
+    document.getElementById("level").innerText = "level: " + level;
     document.getElementById("health").innerText = "health: " + health + "/" + max_health;
     document.getElementById("mana").innerText = "mana: " + mana + "/" + max_mana;
     document.getElementById("gold").innerText = "gold: " + gold;
@@ -180,18 +190,21 @@ function enemyDeath()
             case 1:
                 enemy_health = 0;
                 gold += Math.floor((Math.random() * 10) + 1);
+                xp += Math.floor((Math.random() * 7) + 4);
                 dead = 1;
                 document.getElementById("picture").innerHTML = '<img src="Piltid/surnud munnikoletis.png" alt="dead cock" width = "256" height = "auto"/>';
                 break;
             case 2:
                 enemy_health = 0;
                 gold += Math.floor((Math.random() * 10) + 1);
+                xp += Math.floor((Math.random() * 4) + 2);
                 dead = 1; 
                 document.getElementById("picture").innerHTML = '<img src="Piltid/slime dead.png" alt="dead slime" width = "256" height = "auto"/>';
                 break;
             default:
                 enemy_health = 0;
                 gold += Math.floor((Math.random() * 10) + 1);
+                xp += Math.floor((Math.random() * 6) + 3);
                 //r = Math.random() * 1;
                 //if (r > 0.50) {potion_get()} 
                 dead = 1;
@@ -207,6 +220,7 @@ function enemyDeath()
                 mana = max_mana;
             }
         }
+    levelup();
     saveGame();
     updateUI(); 
     LinkShop();
@@ -304,6 +318,9 @@ function pood()
 
 function saveGame() 
 {
+    localStorage.setItem("xp", xp);
+    localStorage.setItem("xpNextLevel", xpNextLevel);
+    localStorage.setItem("level", level);
     localStorage.setItem("health", health);
     localStorage.setItem("mana", mana);
     localStorage.setItem("gold", gold);
@@ -351,6 +368,16 @@ function ability()
         }
     }
     updateUI()
+}
+
+function levelup()
+{
+    if (xp >= xpNextLevel)
+    {
+        level += 1;
+        xpNextLevel += Math.ceil(xpNextLevel * 1.1);
+        levelup();
+    }
 }
 pood()
 updateUI()
