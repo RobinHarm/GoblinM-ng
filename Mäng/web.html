@@ -162,34 +162,38 @@ function attack()
     {
         enemy_health -= damage;
         r = Math.random() * 1;
-        if (r > 0.66) {enemy_attack(); saveGame();} 
+        if (r > 0.33) {enemy_attack(); saveGame();} 
     }
 
     if (enemy_health <= 0 && dead == 0) 
     {
-        switch (rand)
+        enemyDeath();
+    }
+        
+    
+    updateUI(); 
+}
+function enemyDeath()
+{
+    switch (rand)
         {
             case 1:
                 enemy_health = 0;
                 gold += Math.floor((Math.random() * 10) + 1);
-                r = Math.random() * 1;
-                if (r > 0.50) {potion_get()} 
                 dead = 1;
                 document.getElementById("picture").innerHTML = '<img src="Piltid/surnud munnikoletis.png" alt="dead cock" width = "256" height = "auto"/>';
                 break;
             case 2:
                 enemy_health = 0;
                 gold += Math.floor((Math.random() * 10) + 1);
-                r = Math.random() * 1;
-                if (r > 0.50) {potion_get()} 
                 dead = 1; 
                 document.getElementById("picture").innerHTML = '<img src="Piltid/slime dead.png" alt="dead slime" width = "256" height = "auto"/>';
                 break;
             default:
                 enemy_health = 0;
                 gold += Math.floor((Math.random() * 10) + 1);
-                r = Math.random() * 1;
-                if (r > 0.50) {potion_get()} 
+                //r = Math.random() * 1;
+                //if (r > 0.50) {potion_get()} 
                 dead = 1;
                 document.getElementById("picture").innerHTML = '<img src="Piltid/goblinDead.png" alt="dead goblin" width = "256" height = "auto"/>';
                 break;
@@ -203,14 +207,10 @@ function attack()
                 mana = max_mana;
             }
         }
-        saveGame();
-
-        LinkShop();
-    }
-    
+    saveGame();
     updateUI(); 
+    LinkShop();
 }
-
 
 function healing()
 {
@@ -314,20 +314,43 @@ function ability()
 {
     if (playerClass == "warrior") 
     {
+        if (enemy_health > 0 && mana >= 10) 
+        {
         enemy_health -= 2 * damage
+        if (enemy_health <= 0 && dead == 0) 
+        {
+            enemyDeath();
+        }
+        mana -= 10;
+        }
     }
     else if (playerClass == "wizard") 
     {
-        if (health < max_health)
+        if (health < max_health && dead == 0 && mana >= 10)
         {
             health += Math.ceil(enemy_health / 2)
             enemy_health -= Math.ceil(enemy_health / 2)
+            if (enemy_health <= 0 && dead == 0) 
+            {
+                enemyDeath();
+            }
+            mana -= 10;
         }
     }
     else if (playerClass == "thief") 
     {
-
+        if (dead == 0 && mana >= 10)
+        {
+        gold += Math.floor(Math.random() * 10) + 10;
+        enemy_health -= 4;
+        if (enemy_health <= 0 && dead == 0) 
+            {
+                enemyDeath();
+            }
+        mana -= 10;
+        }
     }
+    updateUI()
 }
 pood()
 updateUI()
